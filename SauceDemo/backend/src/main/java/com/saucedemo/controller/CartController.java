@@ -3,7 +3,7 @@ package com.saucedemo.controller;
 import com.saucedemo.dto.AddToCartRequest;
 import com.saucedemo.dto.UpdateCartItemRequest;
 import com.saucedemo.model.CartItem;
-import com.saucedemo.service.CartService;
+import com.saucedemo.service.CartServiceInterface;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,9 +24,9 @@ import java.util.NoSuchElementException;
 @CrossOrigin(origins = "*")
 public class CartController {
 
-    private final CartService cartService;
+    private final CartServiceInterface cartService;
 
-    public CartController(CartService cartService) {
+    public CartController(CartServiceInterface cartService) {
         this.cartService = cartService;
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-public class CartService {
+public class CartService implements CartServiceInterface {
 
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
@@ -20,10 +20,12 @@ public class CartService {
         this.productRepository = productRepository;
     }
 
+    @Override
     public List<CartItem> getCart(String sessionId) {
         return cartItemRepository.findBySessionId(sessionId);
     }
 
+    @Override
     public CartItem addToCart(String sessionId, Long productId, Integer quantity) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NoSuchElementException("Producto no encontrado: " + productId));
@@ -36,6 +38,7 @@ public class CartService {
                 .orElseGet(() -> cartItemRepository.save(new CartItem(sessionId, product, quantity)));
     }
 
+    @Override
     public CartItem updateQuantity(Long itemId, Integer quantity) {
         CartItem item = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new NoSuchElementException("Item de carrito no encontrado: " + itemId));
@@ -43,6 +46,7 @@ public class CartService {
         return cartItemRepository.save(item);
     }
 
+    @Override
     public void removeItem(Long itemId) {
         cartItemRepository.deleteById(itemId);
     }

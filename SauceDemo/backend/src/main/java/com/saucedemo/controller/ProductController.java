@@ -1,7 +1,7 @@
 package com.saucedemo.controller;
 
 import com.saucedemo.model.Product;
-import com.saucedemo.service.ProductService;
+import com.saucedemo.service.ProductServiceInterface;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +16,9 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductServiceInterface productService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductServiceInterface productService) {
         this.productService = productService;
     }
 

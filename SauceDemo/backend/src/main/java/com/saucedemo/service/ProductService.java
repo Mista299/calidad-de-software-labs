@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ProductService {
+public class ProductService implements ProductServiceInterface {
 
     private final ProductRepository productRepository;
 
@@ -16,10 +16,12 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
+    @Override
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
+    @Override
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
     }
