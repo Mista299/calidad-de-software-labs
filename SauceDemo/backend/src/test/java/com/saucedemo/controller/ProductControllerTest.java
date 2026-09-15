@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,5 +60,28 @@ class ProductControllerTest {
         assertThat(respuesta.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(respuesta.getBody()).isEqualTo(productA);
         verify(productService).getProductById(1L);
+    }
+
+    @Test
+    @DisplayName("getAllProducts debe retornar lista vacía cuando el service no devuelve productos")
+    void getAllProducts_retornaListaVacia() {
+        when(productService.getAllProducts()).thenReturn(Collections.emptyList());
+
+        List<Product> resultado = productController.getAllProducts();
+
+        assertThat(resultado).isEmpty();
+        verify(productService).getAllProducts();
+    }
+
+    @Test
+    @DisplayName("getProductById debe retornar 404 cuando el producto no existe")
+    void getProductById_retorna404CuandoNoExiste() {
+        when(productService.getProductById(99L)).thenReturn(Optional.empty());
+
+        ResponseEntity<Product> respuesta = productController.getProductById(99L);
+
+        assertThat(respuesta.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(respuesta.getBody()).isNull();
+        verify(productService).getProductById(99L);
     }
 }

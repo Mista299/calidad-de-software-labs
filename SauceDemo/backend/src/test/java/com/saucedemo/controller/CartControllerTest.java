@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -90,5 +91,37 @@ class CartControllerTest {
 
         assertThat(respuesta.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(cartService).removeItem(1L);
+    }
+
+    @Test
+    @DisplayName("addToCart debe retornar 404 cuando el service lanza NoSuchElementException")
+    void addToCart_retorna404CuandoServiceLanzaExcepcion() {
+        AddToCartRequest request = new AddToCartRequest();
+        request.setSessionId("session-1");
+        request.setProductId(99L);
+        request.setQuantity(1);
+        when(cartService.addToCart("session-1", 99L, 1))
+                .thenThrow(new NoSuchElementException("Producto no encontrado: 99"));
+
+        ResponseEntity<CartItem> respuesta = cartController.addToCart(request);
+
+        assertThat(respuesta.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(respuesta.getBody()).isNull();
+        verify(cartService).addToCart("session-1", 99L, 1);
+    }
+
+    @Test
+    @DisplayName("updateQuantity debe retornar 404 cuando el service lanza NoSuchElementException")
+    void updateQuantity_retorna404CuandoServiceLanzaExcepcion() {
+        UpdateCartItemRequest request = new UpdateCartItemRequest();
+        request.setQuantity(3);
+        when(cartService.updateQuantity(99L, 3))
+                .thenThrow(new NoSuchElementException("Item de carrito no encontrado: 99"));
+
+        ResponseEntity<CartItem> respuesta = cartController.updateQuantity(99L, request);
+
+        assertThat(respuesta.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(respuesta.getBody()).isNull();
+        verify(cartService).updateQuantity(99L, 3);
     }
 }

@@ -6,11 +6,9 @@ Documentación de las pruebas unitarias del backend de SauceDemo.
 
 - **Michael Stiven Tabares Tobón** 
 - **Adrian Espinosa Montoya**
+- **Jose Manuel Bernal Aguilar**
 - **Pablo** 
-- **Emiro** 
-- 
-- 
-- 
+- **Emiro**
 
 -->
 
