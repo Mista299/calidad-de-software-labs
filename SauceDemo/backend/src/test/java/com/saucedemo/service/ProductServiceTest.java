@@ -50,6 +50,20 @@ class ProductServiceTest {
     }
 
     @Test
+    @DisplayName("getAllProducts debe retornar una lista vacia cuando no hay productos")
+    void getAllProducts_debeRetornarListaVaciaCuandoNoHayProductos() {
+        // Arrange: el repositorio no encuentra productos.
+        when(productRepository.findAll()).thenReturn(List.of());
+
+        // Act: se consulta la lista mediante el service.
+        List<Product> resultado = productService.getAllProducts();
+
+        // Assert: el resultado es una lista vacia y se consulto el repositorio.
+        assertThat(resultado).isEmpty();
+        verify(productRepository).findAll();
+    }
+
+    @Test
     @DisplayName("getProductById debe retornar el producto envuelto en Optional cuando existe")
     void getProductById_debeRetornarProductoCuandoExiste() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(productA));
@@ -59,5 +73,19 @@ class ProductServiceTest {
         assertThat(resultado).isPresent();
         assertThat(resultado).contains(productA);
         verify(productRepository).findById(1L);
+    }
+
+    @Test
+    @DisplayName("getProductById debe retornar vacio cuando el producto no existe")
+    void getProductById_debeRetornarVacioCuandoNoExiste() {
+        // Arrange: el repositorio indica que el ID no existe.
+        when(productRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // Act: se busca el producto mediante el service.
+        Optional<Product> resultado = productService.getProductById(99L);
+
+        // Assert: el service devuelve Optional.empty().
+        assertThat(resultado).isEmpty();
+        verify(productRepository).findById(99L);
     }
 }

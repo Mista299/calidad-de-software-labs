@@ -1,5 +1,4 @@
 package com.saucedemo.controller;
-
 import com.saucedemo.dto.AddToCartRequest;
 import com.saucedemo.dto.UpdateCartItemRequest;
 import com.saucedemo.model.CartItem;

@@ -27,4 +27,11 @@ yarn-error.log*
 
 # --- Logs ---
 *.log
+
+# --- Apuntes de clase ---
+clase6-nota-calidad.md
+
+# --- Documentacion local de pruebas ---
+SauceDemo/QA-PRUEBAS-4-CASOS.md
+
 ParaBank/UI/package-lock.json

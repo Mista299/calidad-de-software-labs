@@ -4,10 +4,10 @@ Documentación de las pruebas unitarias del backend de SauceDemo.
 
 ## Integrantes
 
-- **Michael Stiven Tabares Tobón** (autor del setup inicial, interfaces y happy path)
-
-<!-- Agregar aquí los nombres de los compañeros que completan los tests pendientes:
-
+- **Michael Stiven Tabares Tobón** 
+- **Adrian Espinosa Montoya**
+- **Pablo** 
+- **Emiro** 
 - 
 - 
 - 
@@ -57,27 +57,29 @@ Spring Boot resuelve la inyección en tiempo de arranque: encuentra `ProductServ
 mvn test
 ```
 
-Resultado esperado: **12 tests pasan, 0 fallan**, en menos de 5 segundos, sin levantar Spring ni conectar a la BD.
+Resultado esperado: **14 tests pasan, 0 fallan**, sin levantar Spring ni conectar a la BD.
 
 ## Convención de los tests
 
 - **AAA (Arrange, Act, Assert)** en cada test
 - Nombres descriptivos con `@DisplayName`
 - Solo se testean métodos públicos
-- Cada test es independiente (sin orden)
+- Cada test es independiente 
 
 ---
 
-## ✅ Lo que está hecho (Happy Path)
+## Lo que está hecho
 
-Estos 12 tests cubren los flujos donde **todo funciona como se espera**:
+Estos 14 tests cubren los flujos exitosos y dos casos de borde del service:
 
-### `ProductServiceTest` (2)
+### `ProductServiceTest` (4)
 
 | Test | Qué verifica |
 |---|---|
 | `getAllProducts_debeRetornarProductosDelRepositorio` | El service devuelve la lista completa del repository |
 | `getProductById_debeRetornarProductoCuandoExiste` | El service devuelve `Optional<Product>` con el producto encontrado |
+| `getAllProducts_debeRetornarListaVaciaCuandoNoHayProductos` | Borde: lista vacia |
+| `getProductById_debeRetornarVacioCuandoNoExiste` | Borde: `Optional.empty()` |
 
 ### `CartServiceTest` (4)
 
@@ -106,16 +108,15 @@ Estos 12 tests cubren los flujos donde **todo funciona como se espera**:
 
 ---
 
-## 🚧 Lo que falta por hacer (para los compañeros)
+## Lo que falta por hacer
 
-Quedan **11 escenarios pendientes** que complementan la cobertura. Distribúyanse libremente:
+Quedan **9 escenarios pendientes** que complementan la cobertura. Distribúyanse libremente:
 
-### `ProductServiceTest` — faltan 2
+### `ProductServiceTest` — completado
 
 | # | Test sugerido | Qué cubre |
 |---|---|---|
-| 1 | `getAllProducts_debeRetornarListaVaciaCuandoNoHayProductos` | Borde: lista vacía |
-| 2 | `getProductById_debeRetornarVacioCuandoNoExiste` | Borde: `Optional.empty()` |
+Los dos escenarios de borde ya fueron implementados.
 
 ### `CartServiceTest` — faltan 5
 
@@ -188,7 +189,7 @@ assertThat(captor.getValue().getQuantity()).isEqualTo(5); // 2 previos + 3 nuevo
 
 ---
 
-## 📊 Cobertura final esperada
+## Cobertura final esperada
 
 Al completar los 11 tests pendientes, la cobertura debería ser:
 
