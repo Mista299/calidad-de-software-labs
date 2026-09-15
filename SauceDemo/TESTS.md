@@ -4,11 +4,9 @@ Documentación de las pruebas unitarias del backend de SauceDemo.
 
 ## Integrantes
 
-- **Michael Stiven Tabares Tobón** 
+- **Michael Stiven Tabares Tobón**
 - **Adrian Espinosa Montoya**
 - **Jose Manuel Bernal Aguilar**
-
--->
 
 ## Stack de pruebas
 
@@ -22,12 +20,14 @@ Documentación de las pruebas unitarias del backend de SauceDemo.
 ```
 src/test/java/com/saucedemo/
 ├── service/
-│   ├── ProductServiceTest.java       (2 tests)
-│   └── CartServiceTest.java          (4 tests)
+│   ├── ProductServiceTest.java       (4 tests)
+│   └── CartServiceTest.java          (9 tests)
 └── controller/
-    ├── ProductControllerTest.java    (2 tests)
-    └── CartControllerTest.java       (4 tests)
+    ├── ProductControllerTest.java    (4 tests)
+    └── CartControllerTest.java       (6 tests)
 ```
+
+**Total: 23 tests unitarios.**
 
 ## Cambios al código de producción
 
@@ -53,155 +53,73 @@ Spring Boot resuelve la inyección en tiempo de arranque: encuentra `ProductServ
 mvn test
 ```
 
-Resultado esperado: **14 tests pasan, 0 fallan**, sin levantar Spring ni conectar a la BD.
+Resultado esperado: **23 tests pasan, 0 fallan**, sin levantar Spring ni conectar a la BD.
+
+Para ver el reporte de cobertura con JaCoCo:
+
+```bash
+mvn test -Djacoco.skip=false
+```
 
 ## Convención de los tests
 
 - **AAA (Arrange, Act, Assert)** en cada test
 - Nombres descriptivos con `@DisplayName`
 - Solo se testean métodos públicos
-- Cada test es independiente 
+- Cada test es independiente
 
 ---
 
-## Lo que está hecho
+## Tests implementados
 
-Estos 14 tests cubren los flujos exitosos y dos casos de borde del service:
-
-### `ProductServiceTest` (4)
+### `ProductServiceTest` (4 tests)
 
 | Test | Qué verifica |
 |---|---|
 | `getAllProducts_debeRetornarProductosDelRepositorio` | El service devuelve la lista completa del repository |
+| `getAllProducts_debeRetornarListaVaciaCuandoNoHayProductos` | Borde: el service devuelve lista vacía cuando el repository no tiene productos |
 | `getProductById_debeRetornarProductoCuandoExiste` | El service devuelve `Optional<Product>` con el producto encontrado |
-| `getAllProducts_debeRetornarListaVaciaCuandoNoHayProductos` | Borde: lista vacia |
-| `getProductById_debeRetornarVacioCuandoNoExiste` | Borde: `Optional.empty()` |
+| `getProductById_debeRetornarVacioCuandoNoExiste` | Borde: el service devuelve `Optional.empty()` cuando el id no existe |
 
-### `CartServiceTest` (4)
+### `CartServiceTest` (9 tests)
 
 | Test | Qué verifica |
 |---|---|
-| `getCart_deveRetornarItemsDeLaSesion` | Devuelve los items del sessionId solicitado |
+| `getCart_deveRetornarItemsDeLaSesion` | Devuelve los items del `sessionId` solicitado desde el repository |
 | `addToCart_creaNuevoItemCuandoProductoExisteYNoHayItemPrevio` | Crea un `CartItem` nuevo cuando el producto existe y no había item previo en el carrito |
-| `updateQuantity_actualizaCantidadCuandoItemExiste` | Actualiza la cantidad del item existente |
-| `removeItem_llamaDeleteByIdDelRepositorio` | Llama a `deleteById` del repository |
+| `updateQuantity_actualizaCantidadCuandoItemExiste` | Actualiza la cantidad del item existente y lo persiste con `save` |
+| `removeItem_llamaDeleteByIdDelRepositorio` | Llama a `deleteById` del repository con el id indicado |
+| `getCart_debeRetornarListaVaciaCuandoSesionNoTieneItems` | Borde: el service devuelve lista vacía cuando la sesión no tiene items |
+| `addToCart_incrementaCantidadCuandoItemYaExisteEnCarrito` | Suma la cantidad nueva a la existente cuando ya hay un item para ese producto en la sesión |
+| `addToCart_lanzaExcepcionCuandoProductoNoExiste` | Excepción: lanza `NoSuchElementException` cuando el `productId` no existe |
+| `updateQuantity_lanzaExcepcionCuandoItemNoExiste` | Excepción: lanza `NoSuchElementException` cuando el `itemId` no existe |
+| `removeItem_propagaExcepcionSiRepositorioFalla` | Excepción: propaga el fallo del repository al llamar `removeItem` |
 
-### `ProductControllerTest` (2)
+### `ProductControllerTest` (4 tests)
 
 | Test | Qué verifica |
 |---|---|
 | `getAllProducts_retornaListaDelService` | Devuelve la lista retornada por el service |
-| `getProductById_retorna200ConProductoCuandoExiste` | Retorna `ResponseEntity.ok` con el producto |
+| `getProductById_retorna200ConProductoCuandoExiste` | Retorna `ResponseEntity.ok` con el producto en el body |
+| `getAllProducts_retornaListaVacia` | Borde: devuelve lista vacía cuando el service no retorna productos |
+| `getProductById_retorna404CuandoNoExiste` | Retorna `ResponseEntity.notFound()` cuando el service devuelve `Optional.empty()` |
 
-### `CartControllerTest` (4)
+### `CartControllerTest` (6 tests)
 
 | Test | Qué verifica |
 |---|---|
 | `getCart_retornaItemsDelService` | Devuelve la lista retornada por el service |
-| `addToCart_retorna200ConItemCuandoExitoso` | Retorna `ResponseEntity.ok` con el item agregado |
-| `updateQuantity_retorna200ConItemCuandoExitoso` | Retorna `ResponseEntity.ok` con el item actualizado |
-| `removeItem_retorna204` | Retorna `ResponseEntity.noContent()` |
+| `addToCart_retorna200ConItemCuandoExitoso` | Retorna `ResponseEntity.ok` con el item agregado en el body |
+| `updateQuantity_retorna200ConItemCuandoExitoso` | Retorna `ResponseEntity.ok` con el item actualizado en el body |
+| `removeItem_retorna204` | Retorna `ResponseEntity.noContent()` sin body |
+| `addToCart_retorna404CuandoServiceLanzaExcepcion` | Retorna `ResponseEntity.notFound()` cuando el service lanza `NoSuchElementException` (producto no existe) |
+| `updateQuantity_retorna404CuandoServiceLanzaExcepcion` | Retorna `ResponseEntity.notFound()` cuando el service lanza `NoSuchElementException` (item no existe) |
 
 ---
 
-## Lo que falta por hacer
+## Cobertura
 
-Quedan **9 escenarios pendientes** que complementan la cobertura. Distribúyanse libremente:
+Con los 23 tests implementados se obtiene **cobertura al 100%** de las líneas y ramas en:
 
-### `ProductServiceTest` — completado
-
-| # | Test sugerido | Qué cubre |
-|---|---|---|
-Los dos escenarios de borde ya fueron implementados.
-
-### `CartServiceTest` — faltan 5
-
-| # | Test sugerido | Qué cubre |
-|---|---|---|
-| 3 | `getCart_debeRetornarListaVaciaCuandoSesionNoTieneItems` | Borde: lista vacía |
-| 4 | `addToCart_incrementaCantidadCuandoItemYaExisteEnCarrito` | Rama: cuando ya existe el item, suma cantidades en lugar de crear uno nuevo |
-| 5 | `addToCart_lanzaExcepcionCuandoProductoNoExiste` | Excepción: `NoSuchElementException` cuando el `productId` no existe |
-| 6 | `updateQuantity_lanzaExcepcionCuandoItemNoExiste` | Excepción: `NoSuchElementException` cuando el `itemId` no existe |
-| 7 | `removeItem_propagaExcepcionSiRepositorioFalla` | Excepción: propaga fallos del repository |
-
-### `ProductControllerTest` — faltan 2
-
-| # | Test sugerido | Qué cubre |
-|---|---|---|
-| 8 | `getAllProducts_retornaListaVacia` | Borde: lista vacía |
-| 9 | `getProductById_retorna404CuandoNoExiste` | Status 404 cuando service retorna `Optional.empty()` |
-
-### `CartControllerTest` — faltan 2
-
-| # | Test sugerido | Qué cubre |
-|---|---|---|
-| 10 | `addToCart_retorna404CuandoServiceLanzaExcepcion` | Status 404 cuando service lanza `NoSuchElementException` (producto no existe) |
-| 11 | `updateQuantity_retorna404CuandoServiceLanzaExcepcion` | Status 404 cuando service lanza `NoSuchElementException` (item no existe) |
-
----
-
-## 🧪 Pistas para los compañeros
-
-### Para testear excepciones
-
-```java
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
-
-when(productRepository.findById(99L)).thenReturn(Optional.empty());
-
-assertThatThrownBy(() -> cartService.addToCart("session-1", 99L, 1))
-        .isInstanceOf(NoSuchElementException.class)
-        .hasMessageContaining("99");
-
-verify(cartItemRepository, never()).save(any(CartItem.class));
-```
-
-### Para testear un 404 en el Controller
-
-```java
-when(cartService.addToCart("session-1", 99L, 1))
-        .thenThrow(new NoSuchElementException("Producto no encontrado: 99"));
-
-ResponseEntity<CartItem> respuesta = cartController.addToCart(request);
-
-assertThat(respuesta.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-assertThat(respuesta.getBody()).isNull();
-```
-
-### Para usar captores (verificar lo que se guardó)
-
-```java
-@Captor
-private ArgumentCaptor<CartItem> captor;
-
-when(cartItemRepository.save(any(CartItem.class))).thenAnswer(inv -> inv.getArgument(0));
-
-cartService.addToCart("session-1", 1L, 3);
-
-verify(cartItemRepository).save(captor.capture());
-assertThat(captor.getValue().getQuantity()).isEqualTo(5); // 2 previos + 3 nuevos
-```
-
----
-
-## Cobertura final esperada
-
-Al completar los 11 tests pendientes, la cobertura debería ser:
-
-- **100%** de las líneas en `ProductService` y `ProductController`
-- **100%** de las ramas en `CartService` y `CartController` (incluyendo el `orElseThrow`, `map.orElseGet`, etc.)
-
-Verificar con:
-
-```bash
-mvn test
-```
-
-(Todos los tests deben pasar.)
-
-```bash
-mvn test -Djacoco.skip=false
-```
-
-(Para ver el reporte visual de cobertura con JaCoCo si está configurado.)
+- `ProductService` y `ProductController`
+- `CartService` y `CartController` (incluyendo `orElseThrow`, `map.orElseGet`, etc.)
